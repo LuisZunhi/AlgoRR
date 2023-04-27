@@ -1,4 +1,5 @@
-package com.mycompany.soplanificadorrr;
+package com.hackerman.p1rralgoritmos;
+
 
 public class Simulador {
 

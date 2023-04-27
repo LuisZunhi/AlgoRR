@@ -1,4 +1,5 @@
-package com.mycompany.soplanificadorrr;
+package com.hackerman.p1rralgoritmos;
+
 
 /*
  * Esta clase se encarga de agregar los procesos a la cola de procesos listos
