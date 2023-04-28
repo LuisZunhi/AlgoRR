@@ -53,41 +53,57 @@ public class Cola {
         }
     }
 
-    //Método que imprime una cola con todos los datos
+    
     public void imprimirColaCompleta() {
         try {
             nodoImpresion = nodoInicial;
 
-            System.out.println("\t#### Datos en la cola '" + miNombre + "' ####");
-            System.out.println("\t===========================================Cola===========================================");
-            System.out.println("\t| Nombre | ID | Prioridad | Tamanio (k) | Tiempo ejecucion (mseg) | Tiempo llegada (mseg)|");
+            System.out.println("\n\t\tMostrando cambios en la cola '" + miNombre);
+            System.out.println("\t ___________________________________________________________________________");
+            System.out.println("\t| ID | Nombre |  Memoria [kb] | Tiempo llegada [ms] | Tiempo ejecucion [ms] |");
 
-            for (int i = 0; i < cantidad; i++) {
-                if (i == 0) { //Si el nodo es head de la cola
-                    System.out.println("\t|   " + nodoImpresion.nombre + "   | " + nodoImpresion.id + "  |     " + nodoImpresion.prioridad
-                            + "     |      " + nodoImpresion.tam + "     |          " + nodoImpresion.tiempoServicio + "           |         "
-                            + nodoImpresion.tiempoLlegada + "         |\t<--- Head");
-                } else if (i == cantidad - 1) { //Si el nodo es tail de la cola
-                    System.out.println("\t|   " + nodoImpresion.nombre + "   | " + nodoImpresion.id + "  |     " + nodoImpresion.prioridad
-                            + "     |      " + nodoImpresion.tam + "     |          " + nodoImpresion.tiempoServicio + "           |         "
-                            + nodoImpresion.tiempoLlegada + "         |\t<--- Tail");
+            for (int i = 0; i < cantidad; i++) { 
+                String showID = String.format("%03d", nodoImpresion.id ); 
+                String showName = nodoImpresion.nombre.substring(0, Math.min(nodoImpresion.nombre.length(), 6));
+                String showMemoSize    = String.format("%03d", nodoImpresion.tam); 
+                String showArriveTime  = String.format("%03d", nodoImpresion.tiempoLlegada);
+                String showTimeService = String.format("%03d", nodoImpresion.tiempoServicio); 
+                
+                if (i == 0) {  //head
+                    System.out.println("\t| " + showID + 
+                                         "| " + showName +  
+                                        " |   " + showMemoSize + 
+                                "         |   " + showArriveTime +
+                          "               |   "  + showTimeService + 
+                        "                 | \t <-------------------- Head");
 
-                } else { //Nodos entre head y tail
-                    System.out.println("\t|   " + nodoImpresion.nombre + "   | " + nodoImpresion.id + "  |     " + nodoImpresion.prioridad
-                            + "     |      " + nodoImpresion.tam + "     |          " + nodoImpresion.tiempoServicio + "           |         "
-                            + nodoImpresion.tiempoLlegada + "         |");
+                } else if (i == cantidad - 1) { //tail
+                    System.out.println("\t| " + showID + 
+                                         "| " + showName +  
+                                        " |   " + showMemoSize + 
+                                "         |   " + showArriveTime +
+                          "               |   "  + showTimeService + 
+                        "                 | \t <-------------------- Tail");
+
+                } else { //Entre head y tail
+                    System.out.println("\t| " + showID + 
+                                         "| " + showName +  
+                                        " |   " + showMemoSize + 
+                                "         |   " + showArriveTime +
+                          "               |   "  + showTimeService + 
+                        "                 | \t  ");
                 }
 
                 nodoImpresion = nodoImpresion.getSiguiente();
             }
 
-            System.out.println("\t=========================================Fin Cola=========================================");
+            System.out.println("\t ___________________________________________________________________________\n\n");
 
         } catch (NullPointerException e) {
         }
     }
 
-    //Método que imprime los datos finales y promedios
+    
     public void imprimirDatosFinales() {
         try {
             nodoImpresion = nodoInicial;
@@ -97,18 +113,30 @@ public class Cola {
             int espProm = 0;
             int ejecProm = 0;
 
-            System.out.println("\t#### Datos finales de los procesos ####");
-            System.out.println("\t===============================================================================");
-            System.out.println("\t| Nombre | T. Llegada | T. Servicio | T. Ejecucion | T. Espera | T. Respuesta |");
+            System.out.println("\n\n                      Resumen de la ejecucion de los procesos                  ");
+            System.out.println("\t_______________________________________________________________________________");
+            System.out.println("\t| Nombre | T. Ejecucion | T. Espera | T. Respuesta | T. Llegada | T. Servicio |");
 
             for (int i = 0; i < cantidad; i++) {
-
+                String showName = nodoImpresion.nombre.substring(0, Math.min(nodoImpresion.nombre.length(), 8));
                 ejec = nodoImpresion.tiempoTotal - nodoImpresion.tiempoLlegada;
-                esp = ejec - nodoImpresion.tiempoServicio;
-                resp = nodoImpresion.tiempoEntrada - nodoImpresion.tiempoLlegada;
+                String showTejec = String.format("%03d", ejec); 
 
-                System.out.println("\t|   " + nodoImpresion.nombre + "   |    " + nodoImpresion.tiempoLlegada + "    |    " + nodoImpresion.tiempoServicio
-                        + "     |     " + ejec + "     |     " + esp + "     |      " + resp + "       |\t");
+                esp = ejec - nodoImpresion.tiempoServicio;
+                String showTesp = String.format("%03d", esp); 
+
+                resp = nodoImpresion.tiempoEntrada - nodoImpresion.tiempoLlegada;
+                String showTresp = String.format("%03d", resp); 
+
+                String showArriveTime = String.format("%03d", nodoImpresion.tiempoLlegada); 
+                String showTimeService = String.format("%03d", nodoImpresion.tiempoLlegada);
+
+                System.out.println("\t|   " + showName + 
+                                  "   |   " + showTejec + 
+                                  "   |   " + showTesp + 
+                                  "   |   " + showTresp + 
+                                  "   |   " + showArriveTime + 
+                                  "   |   " + showTimeService + "   |");
 
                 ejecProm += ejec;
                 espProm += esp;
@@ -116,8 +144,7 @@ public class Cola {
 
                 nodoImpresion = nodoImpresion.getSiguiente();
             }
-
-            System.out.println("\t===============================================================================");
+            System.out.println("\t_______________________________________________________________________________"); 
 
             System.out.println("\nEjecucion promedio: " + ejecProm / cantidad + "\nEspera promedio: "
                     + espProm / cantidad + "\nRespuesta promedio: " + respProm / cantidad);
