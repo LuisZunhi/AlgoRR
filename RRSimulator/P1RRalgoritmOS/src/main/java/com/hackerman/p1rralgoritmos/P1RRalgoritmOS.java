@@ -75,7 +75,7 @@ public class P1RRalgoritmOS {
         System.out.println("Profesora: Ing. Patricia Del Valle Morales");
         System.out.println("Alumnos:");
         System.out.println("Mejia Alba Israel Hipolito");
-        System.out.println("Suñiga Luis");
+        System.out.println("Zuñiga Salgado Luis Eduardo ");
     }
 
     public static int[] definicionParametros(){
