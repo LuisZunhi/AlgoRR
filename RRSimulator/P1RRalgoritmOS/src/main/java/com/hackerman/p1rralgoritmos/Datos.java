@@ -83,6 +83,7 @@ public class Datos {
     }
 
     //METODOS
+    Partiendo de este codigo, quiero que me des el codigo de quick sort que ordene a los procesos en funcion de su tiempo de llegada
     private void ordenarProcesos() {
         //Algoritmo de ordenamiento bubble sort
         for (int x = 0; x < procesosDesordenados.length; x++) {
