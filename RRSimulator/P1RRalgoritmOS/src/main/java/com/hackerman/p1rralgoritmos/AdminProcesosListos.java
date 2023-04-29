@@ -42,7 +42,7 @@ public class AdminProcesosListos extends Thread {
             dormir(procesoTemp.tiempoLlegada - time_t); // duerme lo necesario para que el proceso se insete en su tiempo de llegada           
             time_t = time_t + (procesoTemp.tiempoLlegada - time_t); // Actualiza el tiempo que ha transcurrido en total
 
-            if (memoriaRAM - procesoTemp.tam >= 0) {
+            if (memoRAM - procesoTemp.tam >= 0) {
                 encolarProcesoListo(procesoTemp);
                 System.out.println("Llega el proceso " + procesoTemp.name + " en el tiempo " + procesoTemp.tiempoLlegada + " [ms], tamanio "
                         + procesoTemp.tam + " [k]");
