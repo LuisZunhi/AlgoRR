@@ -20,10 +20,10 @@ public class AdminProcesosListos extends Thread {
     boolean ramLista;
 
     //Constructores
-    public AdminProcesosListos(Cola procesosCargados, Cola procesosListos, int RAM) {
+    public AdminProcesosListos(Cola procesosCargados, Cola ready_proces, int RAM) {
         this.setName("HiloAdminProcesosListos");
         this.colaProcesosCargados = procesosCargados;
-        this.ready_q = procesosListos;
+        this.ready_q = ready_proces;
         this.tiempoTranscurrido = 0;
         this.disponible = true;
         this.subieronTodos = false;
@@ -35,8 +35,8 @@ public class AdminProcesosListos extends Thread {
     //Metodos
     @Override
     public void run() {
-        int cantidadInicial = colaProcesosCargados.getCantidad(); //cantidad fija
-        for (int i = 0; i < cantidadInicial; i++) {
+        int start_cont = colaProcesosCargados.getCantidad(); //cantidad fija
+        for (int i = 0; i < start_cont; i++) {
             procesoTemp = colaProcesosCargados.desencolar();
 
             dormir(procesoTemp.tiempoLlegada - tiempoTranscurrido); // duerme lo necesario para que el proceso se insete en su tiempo de llegada           
@@ -44,13 +44,13 @@ public class AdminProcesosListos extends Thread {
 
             if (memoriaRAM - procesoTemp.tam >= 0) {
                 encolarProcesoListo(procesoTemp);
-                System.out.println("Llega el proceso " + procesoTemp.nombre + " en el tiempo " + procesoTemp.tiempoLlegada + " [ms], tamanio "
+                System.out.println("Llega el proceso " + procesoTemp.name + " en el tiempo " + procesoTemp.tiempoLlegada + " [ms], tamanio "
                         + procesoTemp.tam + " [k]");
             } else {
                 hayProcesoEsperandoRAM = true;
                 esperarRAM();
                 encolarProcesoListo(procesoTemp);
-                System.out.println("Llega el proceso " + procesoTemp.nombre + " con retraso al esperar espacio en RAM, tamanio "
+                System.out.println("Llega el proceso " + procesoTemp.name + " con retraso al esperar espacio en RAM, tamanio "
                         + procesoTemp.tam + " [k]");
             }
         }

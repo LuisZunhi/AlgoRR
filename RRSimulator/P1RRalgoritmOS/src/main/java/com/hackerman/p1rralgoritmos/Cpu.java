@@ -12,19 +12,19 @@ public class Cpu extends Thread {
 
     //Atributos
     private final int quantum;
-    private final AdminProcesosListos procesosListos;
+    private final AdminProcesosListos ready_proces;
     private Proceso procesoTemp;
     private int tiempoTranscurrido;
-    private boolean primeraIteracion;
+    private boolean first_run;
     private Cola finished_q;
 
     //Constructores
-    public Cpu(int quantum, AdminProcesosListos procesosListos, Cola finished_q) {
+    public Cpu(int quantum, AdminProcesosListos ready_proces, Cola finished_q) {
         this.setName("CPU");
         this.quantum = quantum;
-        this.procesosListos = procesosListos;
+        this.ready_proces = ready_proces;
         this.tiempoTranscurrido = 0;
-        this.primeraIteracion = true;
+        this.first_run = true;
         this.finished_q = finished_q;
     }
 
@@ -32,9 +32,9 @@ public class Cpu extends Thread {
     @Override
     public void run() {
         while (true) {// Ciclo infinito, se corta hasta que la simulacion finaliza
-            procesoTemp = procesosListos.desencolarProcesoListo();
+            procesoTemp = ready_proces.desencolarProcesoListo();
 
-            if (procesosListos.subieronTodos && procesoTemp == null) {
+            if (ready_proces.subieronTodos && procesoTemp == null) {
                 //Acciones cuando se han subido todos los procesos y ya no quedan mas en la lista de procesos listos
                 showCpuMess("Terminaron de ejecutarse TODOS los procesos");
                 break;
@@ -42,21 +42,21 @@ public class Cpu extends Thread {
                 //Acciones cuando aun faltan procesos a ejecutar   
                 if (procesoTemp != null) {
 
-                    if (primeraIteracion) {
+                    if (first_run) {
                         //Acciones cuando se itera por primera vez
                         tiempoTranscurrido = procesoTemp.tiempoLlegada;
-                        primeraIteracion = false;
+                        first_run = false;
                     }
 
-                    if (procesoTemp.primeraIteracion) {
+                    if (procesoTemp.first_run) {
                         //Acciones cuando un proceso entra a CPU por primera vez
                         procesoTemp.tiempoEntrada = tiempoTranscurrido;
-                        procesoTemp.primeraIteracion = false;
-                        procesosListos.memoriaRAM = procesosListos.memoriaRAM - procesoTemp.tam;
-                        showCpuMess("Se cargó el proceso " + procesoTemp.nombre + " en memoria RAM. Memoria RAM disponible " + procesosListos.memoriaRAM + "[k]");
+                        procesoTemp.first_run = false;
+                        ready_proces.memoriaRAM = ready_proces.memoriaRAM - procesoTemp.tam;
+                        showCpuMess("Se cargó el proceso " + procesoTemp.name + " en memoria RAM. Memoria RAM disponible " + ready_proces.memoriaRAM + "[k]");
                     }
 
-                    showCpuMess("Proceso " + procesoTemp.nombre + " subio a CPU en el tiempo " + tiempoTranscurrido + " [ms], tiempo faltante de ejecucion "
+                    showCpuMess("Proceso " + procesoTemp.name + " subio a CPU en el tiempo " + tiempoTranscurrido + " [ms], tiempo faltante de ejecucion "
                             + procesoTemp.tiempoFaltante + " [ms]");
 
                     if (procesoTemp.tiempoFaltante > quantum) {
@@ -64,8 +64,8 @@ public class Cpu extends Thread {
                         dormir(quantum);
 
                         procesoTemp.tiempoFaltante -= quantum;// Se le resta el tiempo que ya se ejecutó
-                        showCpuMess("Proceso " + procesoTemp.nombre + " entra de nuevo a la cola de procesos listos en el tiempo " + tiempoTranscurrido + " [ms]");
-                        procesosListos.encolarProcesoListo(procesoTemp);
+                        showCpuMess("Proceso " + procesoTemp.name + " entra de nuevo a la cola de procesos listos en el tiempo " + tiempoTranscurrido + " [ms]");
+                        ready_proces.encolarProcesoListo(procesoTemp);
 
                     } else {
                         //Caso en el que el proceso necesita menos tiempo que el quantum, ya no necesita regresar
@@ -75,13 +75,13 @@ public class Cpu extends Thread {
                         procesoTemp.tiempoTotal = tiempoTranscurrido;
                         finished_q.insertar(procesoTemp);
 
-                        showCpuMess("Proceso " + procesoTemp.nombre + " termino su ejecucion en el tiempo " + tiempoTranscurrido + " [ms]");
-                        procesosListos.memoriaRAM = procesosListos.memoriaRAM + procesoTemp.tam;
-                        showCpuMess("Se liberó memoria RAM. Memoria RAM disponible " + procesosListos.memoriaRAM + "[k]");
+                        showCpuMess("Proceso " + procesoTemp.name + " termino su ejecucion en el tiempo " + tiempoTranscurrido + " [ms]");
+                        ready_proces.memoriaRAM = ready_proces.memoriaRAM + procesoTemp.tam;
+                        showCpuMess("Se liberó memoria RAM. Memoria RAM disponible " + ready_proces.memoriaRAM + "[k]");
 
-                        if (procesosListos.hayProcesoEsperandoRAM) {
-                            procesosListos.ramLista = true;
-                            procesosListos.esperarRAM();
+                        if (ready_proces.hayProcesoEsperandoRAM) {
+                        	ready_proces.ramLista = true;
+                        	ready_proces.esperarRAM();
                         }
                     }
                 }
