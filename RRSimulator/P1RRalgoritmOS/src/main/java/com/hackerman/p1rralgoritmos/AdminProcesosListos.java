@@ -9,7 +9,7 @@ public class AdminProcesosListos extends Thread {
 
     //Atributos
     private final Cola colaProcesosCargados;
-    private final Cola colaProcesosListos;
+    private final Cola ready_q;
     private Proceso procesoTemp;
     private Proceso procesoTempCerrojo;
     private int tiempoTranscurrido;
@@ -23,7 +23,7 @@ public class AdminProcesosListos extends Thread {
     public AdminProcesosListos(Cola procesosCargados, Cola procesosListos, int RAM) {
         this.setName("HiloAdminProcesosListos");
         this.colaProcesosCargados = procesosCargados;
-        this.colaProcesosListos = procesosListos;
+        this.ready_q = procesosListos;
         this.tiempoTranscurrido = 0;
         this.disponible = true;
         this.subieronTodos = false;
@@ -75,8 +75,8 @@ public class AdminProcesosListos extends Thread {
         }
         //Entra aqui cuando otro hilo ha dejado de ocupar este metodo
         disponible = false;//Cierra el cerrojo para que otro hilo no ocupe el metodo
-        colaProcesosListos.insertar(procesoListo);
-        colaProcesosListos.imprimirColaCompleta();
+        ready_q.insertar(procesoListo);
+        ready_q.imprimirColaCompleta();
         disponible = true;//Abre el cerrojo cuando termina
         notifyAll();
     }
@@ -91,7 +91,7 @@ public class AdminProcesosListos extends Thread {
         }
         //Entra aqui cuando otro hilo ha dejado de ocupar este metodo
         disponible = false;//Cierra el cerrojo para que otro hilo no ocupe el metodo
-        procesoTempCerrojo = colaProcesosListos.desencolar();
+        procesoTempCerrojo = ready_q.desencolar();
 
         disponible = true;//Abre el cerrojo cuando termina
         notifyAll();

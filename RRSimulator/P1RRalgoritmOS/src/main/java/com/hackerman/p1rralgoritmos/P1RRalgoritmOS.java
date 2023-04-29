@@ -8,7 +8,7 @@ import java.util.Scanner;
 public class P1RRalgoritmOS {
     public static void main(String[] args) { 
         int ramSize , maxProcesSize, quantumSize, nProcess;
-        Cola colaProcesos = new Cola("Cola de procesos cargados"); //Instancia e inicializa la colaProcesos
+        Cola proces_q = new Cola("Cola de procesos cargados"); //Instancia e inicializa la cola de Procesos
         presentacion();         
         int[] parameters  = definicionParametros();  
         ramSize = parameters[0] ;
@@ -35,19 +35,19 @@ public class P1RRalgoritmOS {
             System.out.println("Se ingresaron los datos correctamente");
             Proceso[] procesosOrdenados = new Proceso[nProcess];
             procesosOrdenados = ordenarProcesos( procesosDesordenados);
-            for (int i = 0; i < nProcess; i++) { //ciclo que llena la colaProcesos con los procesos ordenados
-                colaProcesos.insertar(procesosOrdenados[i]);
+            for (int i = 0; i < nProcess; i++) { //ciclo que llena la cola de Procesos con los procesos ordenados
+            	proces_q.insertar(procesosOrdenados[i]);
             }
             System.out.println("Estos han sido los procesos cargados al sistema:");
-            colaProcesos.imprimirColaCompleta();
+            proces_q.imprimirColaCompleta();
             /**
             Simulador simulador = new Simulador(      ); 
             simulador.iniciar(); 
             */   
-            Cola colaProcesosListos = new Cola("Cola de procesos listos");          
-            AdminProcesosListos llegadaP = new AdminProcesosListos(colaProcesos, colaProcesosListos, ramSize);            
-            Cola colaProcesosTerminados = new Cola("Cola de procesos terminados");
-            Cpu cpu = new Cpu(quantumSize, llegadaP, colaProcesosTerminados);
+            Cola ready_q = new Cola("Cola de procesos listos");          
+            AdminProcesosListos llegadaP = new AdminProcesosListos(proces_q, ready_q, ramSize);            
+            Cola finished_q = new Cola("Cola de procesos terminados");
+            Cpu cpu = new Cpu(quantumSize, llegadaP, finished_q);
 
             llegadaP.start();
             cpu.start();
@@ -55,7 +55,7 @@ public class P1RRalgoritmOS {
                 cpu.join();
             } catch (InterruptedException ex) {
             } 
-            colaProcesosTerminados.imprimirDatosFinales();
+            finished_q.imprimirDatosFinales();
             System.out.println("\n\n\t\tFin de ejecucion");
 
         } else{

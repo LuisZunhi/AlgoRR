@@ -16,16 +16,16 @@ public class Cpu extends Thread {
     private Proceso procesoTemp;
     private int tiempoTranscurrido;
     private boolean primeraIteracion;
-    private Cola colaProcesosTerminados;
+    private Cola finished_q;
 
     //Constructores
-    public Cpu(int quantum, AdminProcesosListos procesosListos, Cola colaProcesosTerminados) {
+    public Cpu(int quantum, AdminProcesosListos procesosListos, Cola finished_q) {
         this.setName("CPU");
         this.quantum = quantum;
         this.procesosListos = procesosListos;
         this.tiempoTranscurrido = 0;
         this.primeraIteracion = true;
-        this.colaProcesosTerminados = colaProcesosTerminados;
+        this.finished_q = finished_q;
     }
 
     //Metodos
@@ -73,7 +73,7 @@ public class Cpu extends Thread {
 
                         procesoTemp.tiempoFaltante = 0;
                         procesoTemp.tiempoTotal = tiempoTranscurrido;
-                        colaProcesosTerminados.insertar(procesoTemp);
+                        finished_q.insertar(procesoTemp);
 
                         showCpuMess("Proceso " + procesoTemp.nombre + " termino su ejecucion en el tiempo " + tiempoTranscurrido + " [ms]");
                         procesosListos.memoriaRAM = procesosListos.memoriaRAM + procesoTemp.tam;
