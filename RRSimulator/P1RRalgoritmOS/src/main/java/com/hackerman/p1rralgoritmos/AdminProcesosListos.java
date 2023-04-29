@@ -8,53 +8,53 @@ package com.hackerman.p1rralgoritmos;
 public class AdminProcesosListos extends Thread {
 
     //Atributos
-    private final Cola colaProcesosCargados;
+    private final Cola loadedP_Q;
     private final Cola ready_q;
     private Proceso procesoTemp;
     private Proceso procesoTempCerrojo;
-    private int tiempoTranscurrido;
-    private boolean disponible;
-    boolean subieronTodos;
-    int memoriaRAM;
-    boolean hayProcesoEsperandoRAM;
-    boolean ramLista;
+    private int time_t;
+    private boolean avaible;
+    boolean all_uploaded;
+    int memoRAM;
+    boolean proces_waiting;
+    boolean ram_ready;
 
     //Constructores
     public AdminProcesosListos(Cola procesosCargados, Cola ready_proces, int RAM) {
         this.setName("HiloAdminProcesosListos");
-        this.colaProcesosCargados = procesosCargados;
+        this.loadedP_Q = procesosCargados;
         this.ready_q = ready_proces;
-        this.tiempoTranscurrido = 0;
-        this.disponible = true;
-        this.subieronTodos = false;
-        this.memoriaRAM = RAM;
-        this.hayProcesoEsperandoRAM = false;
-        this.ramLista = false;
+        this.time_t = 0;
+        this.avaible = true;
+        this.all_uploaded = false;
+        this.memoRAM = RAM;
+        this.proces_waiting = false;
+        this.ram_ready = false;
     }
 
     //Metodos
     @Override
     public void run() {
-        int start_cont = colaProcesosCargados.getCantidad(); //cantidad fija
+        int start_cont = loadedP_Q.getCantidad(); //cantidad fija
         for (int i = 0; i < start_cont; i++) {
-            procesoTemp = colaProcesosCargados.desencolar();
+            procesoTemp = loadedP_Q.desencolar();
 
-            dormir(procesoTemp.tiempoLlegada - tiempoTranscurrido); // duerme lo necesario para que el proceso se insete en su tiempo de llegada           
-            tiempoTranscurrido = tiempoTranscurrido + (procesoTemp.tiempoLlegada - tiempoTranscurrido); // Actualiza el tiempo que ha transcurrido en total
+            dormir(procesoTemp.tiempoLlegada - time_t); // duerme lo necesario para que el proceso se insete en su tiempo de llegada           
+            time_t = time_t + (procesoTemp.tiempoLlegada - time_t); // Actualiza el tiempo que ha transcurrido en total
 
             if (memoriaRAM - procesoTemp.tam >= 0) {
                 encolarProcesoListo(procesoTemp);
                 System.out.println("Llega el proceso " + procesoTemp.name + " en el tiempo " + procesoTemp.tiempoLlegada + " [ms], tamanio "
                         + procesoTemp.tam + " [k]");
             } else {
-                hayProcesoEsperandoRAM = true;
+            	proces_waiting = true;
                 esperarRAM();
                 encolarProcesoListo(procesoTemp);
                 System.out.println("Llega el proceso " + procesoTemp.name + " con retraso al esperar espacio en RAM, tamanio "
                         + procesoTemp.tam + " [k]");
             }
         }
-        subieronTodos = true;
+        all_uploaded = true;
     }
 
     private void dormir(int tiempo) {
@@ -66,7 +66,7 @@ public class AdminProcesosListos extends Thread {
     }
 
     public synchronized void encolarProcesoListo(Proceso procesoListo) {
-        while (disponible == false) {
+        while (avaible == false) {
             //Se mantiene en este while cuando otro hilo está ocupando este metodo.
             try {
                 wait(); //se pone a dormir y cede el monitor
@@ -74,15 +74,15 @@ public class AdminProcesosListos extends Thread {
             }
         }
         //Entra aqui cuando otro hilo ha dejado de ocupar este metodo
-        disponible = false;//Cierra el cerrojo para que otro hilo no ocupe el metodo
+        avaible = false;//Cierra el cerrojo para que otro hilo no ocupe el metodo
         ready_q.insertar(procesoListo);
         ready_q.imprimirColaCompleta();
-        disponible = true;//Abre el cerrojo cuando termina
+        avaible = true;//Abre el cerrojo cuando termina
         notifyAll();
     }
 
     public synchronized Proceso desencolarProcesoListo() {
-        while (disponible == false) {
+        while (avaible == false) {
             //Se mantiene en este while cuando otro hilo está ocupando este metodo.
             try {
                 wait(); //se pone a dormir y cede el monitor
@@ -90,16 +90,16 @@ public class AdminProcesosListos extends Thread {
             }
         }
         //Entra aqui cuando otro hilo ha dejado de ocupar este metodo
-        disponible = false;//Cierra el cerrojo para que otro hilo no ocupe el metodo
+        avaible = false;//Cierra el cerrojo para que otro hilo no ocupe el metodo
         procesoTempCerrojo = ready_q.desencolar();
 
-        disponible = true;//Abre el cerrojo cuando termina
+        avaible = true;//Abre el cerrojo cuando termina
         notifyAll();
         return procesoTempCerrojo;
     }
     
     public synchronized void esperarRAM() { // Esperara hasta que CPU baje un proceso
-        while (ramLista == false) {
+        while (ram_ready == false) {
             try {
                 wait();
             } catch (InterruptedException e) {
